@@ -1,0 +1,103 @@
+{
+  "users": [
+    {
+      "id": "user-1",
+      "name": "Event Organizer",
+      "email": "organizer@test.com",
+      "role": "organizer",
+      "password": "123456"
+    },
+    {
+      "id": "user-2",
+      "name": "Regular User",
+      "email": "user@test.com",
+      "role": "user",
+      "password": "123456"
+    }
+  ],
+  "events": [
+    {
+      "id": "event-1",
+      "title": "Tech Conference 2023",
+      "description": "Join us for the biggest tech conference of the year featuring keynotes from industry leaders, workshops, and networking opportunities.",
+      "date": "2023-12-15",
+      "time": "09:00",
+      "location": "Convention Center, Downtown",
+      "image": "https://picsum.photos/seed/event1/800/600",
+      "organizerId": "user-1",
+      "attendees": [
+        {
+          "userId": "user-2",
+          "eventId": "event-1",
+          "status": "going"
+        }
+      ],
+      "createdAt": "2023-11-01T10:00:00Z",
+      "updatedAt": "2023-11-01T10:00:00Z"
+    },
+    {
+      "id": "event-2",
+      "title": "Charity Gala Dinner",
+      "description": "An elegant evening of fine dining and entertainment to raise funds for local community projects.",
+      "date": "2023-12-20",
+      "time": "19:00",
+      "location": "Grand Hotel Ballroom",
+      "image": "https://picsum.photos/seed/event2/800/600",
+      "organizerId": "user-1",
+      "attendees": [],
+      "createdAt": "2023-11-02T14:30:00Z",
+      "updatedAt": "2023-11-02T14:30:00Z"
+    },
+    {
+      "id": "event-3",
+      "title": "Music Festival",
+      "description": "Three days of amazing performances from top artists across multiple stages in a beautiful outdoor setting.",
+      "date": "2023-12-25",
+      "time": "12:00",
+      "location": "City Park",
+      "image": "https://picsum.photos/seed/event3/800/600",
+      "organizerId": "user-1",
+      "attendees": [
+        {
+          "userId": "user-2",
+          "eventId": "event-3",
+          "status": "maybe"
+        }
+      ],
+      "createdAt": "2023-11-03T09:15:00Z",
+      "updatedAt": "2023-11-03T09:15:00Z"
+    },
+    {
+      "id": "event-4",
+      "title": "Startup Pitch Night",
+      "description": "Watch innovative startups pitch their ideas to investors and network with entrepreneurs and VCs.",
+      "date": "2023-12-28",
+      "time": "18:30",
+      "location": "Innovation Hub",
+      "image": "https://picsum.photos/seed/event4/800/600",
+      "organizerId": "user-1",
+      "attendees": [
+        {
+          "userId": "user-2",
+          "eventId": "event-4",
+          "status": "not_going"
+        }
+      ],
+      "createdAt": "2023-11-04T16:45:00Z",
+      "updatedAt": "2023-11-04T16:45:00Z"
+    },
+    {
+      "id": "event-5",
+      "title": "Wellness Retreat",
+      "description": "A weekend of yoga, meditation, healthy eating, and workshops focused on mental and physical wellbeing.",
+      "date": "2023-12-30",
+      "time": "08:00",
+      "location": "Mountain Resort",
+      "image": "https://picsum.photos/seed/event5/800/600",
+      "organizerId": "user-1",
+      "attendees": [],
+      "createdAt": "2023-11-05T11:20:00Z",
+      "updatedAt": "2023-11-05T11:20:00Z"
+    }
+  ]
+}
