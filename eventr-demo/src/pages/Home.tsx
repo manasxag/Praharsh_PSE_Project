@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { EventCard } from '@/components/EventCard';
 import { useAuth } from '@/hooks/useAuth';
 import { Event } from '@/types';
+import { api } from '@/lib/api';
 
 export function Home() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -13,9 +14,12 @@ export function Home() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch('/api/events');
-        const data = await response.json();
-        setEvents(data.data);
+        const response = await api.getEvents();
+        if (response.success) {
+          setEvents(response.data as Event[]);
+        } else {
+          console.error('Failed to fetch events:', response.error);
+        }
       } catch (error) {
         console.error('Failed to fetch events:', error);
       } finally {

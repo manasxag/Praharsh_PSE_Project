@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { EventCard } from '@/components/EventCard';
 import { useAuth } from '@/hooks/useAuth';
 import { Event } from '@/types';
+import { api } from '@/lib/api';
 
 export function Dashboard() {
   const { user, isLoading: authLoading } = useAuth();
@@ -18,14 +19,16 @@ export function Dashboard() {
       
       try {
         // Fetch events organized by the user
-        const myEventsResponse = await fetch(`/api/events?organizerId=${user.id}`);
-        const myEventsData = await myEventsResponse.json();
-        setMyEvents(myEventsData.data);
+        const myEventsResponse = await api.getUserEvents(user.id);
+        if (myEventsResponse.success) {
+          setMyEvents(myEventsResponse.data as Event[]);
+        }
         
         // Fetch events the user has RSVP'd to
-        const rsvpEventsResponse = await fetch(`/api/events?attendeeId=${user.id}`);
-        const rsvpEventsData = await rsvpEventsResponse.json();
-        setRsvpEvents(rsvpEventsData.data);
+        const rsvpEventsResponse = await api.getUserRsvps(user.id);
+        if (rsvpEventsResponse.success) {
+          setRsvpEvents(rsvpEventsResponse.data as Event[]);
+        }
       } catch (error) {
         console.error('Failed to fetch events:', error);
       } finally {

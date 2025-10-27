@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { Event } from '@/types';
 import { formatDate, formatTime } from '@/lib/utils';
+import { api } from '@/lib/api';
 
 export function EventDetails() {
   const { id } = useParams<{ id: string }>();
@@ -16,12 +17,12 @@ export function EventDetails() {
 
   const fetchEvent = async () => {
     try {
-      const response = await fetch(`/api/events/${id}`);
-      if (!response.ok) {
-        throw new Error('Event not found');
+      const response = await api.getEvent(id!);
+      if (response.success) {
+        setEvent(response.data as Event);
+      } else {
+        throw new Error(response.error || 'Event not found');
       }
-      const data = await response.json();
-      setEvent(data.data);
     } catch (error) {
       toast({
         title: 'Error',
@@ -44,12 +45,10 @@ export function EventDetails() {
     }
 
     try {
-      const response = await fetch(`/api/events/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete event');
+      const response = await api.deleteEvent(id!);
+      
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to delete event');
       }
 
       toast({

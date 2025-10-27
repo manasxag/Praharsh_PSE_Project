@@ -3,7 +3,7 @@ import { Event } from '@/types';
 import { formatDate } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CalendarIcon, MapPinIcon } from 'lucide-react';
+import { CalendarIcon, MapPinIcon } from '@/components/ui/icons';
 
 interface EventCardProps {
   event: Event;

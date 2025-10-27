@@ -2,28 +2,23 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
-import { Attendee } from '@/types';
+import { Event } from '@/types';
+import { api } from '@/lib/api';
 
 interface RSVPButtonProps {
   eventId: string;
-  attendees: Attendee[];
+  attendees: string[];
   onRSVPChange: () => void;
 }
-
-type RSVPStatus = 'going' | 'maybe' | 'not_going';
 
 export function RSVPButton({ eventId, attendees, onRSVPChange }: RSVPButtonProps) {
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Find current user's RSVP status
-  const currentUserRSVP = user 
-    ? attendees.find(a => a.userId === user.id)
-    : null;
+  // Check if current user has RSVP'd
+  const hasRSVP = user && attendees.includes(user.id);
 
-  const currentStatus = currentUserRSVP?.status || null;
-
-  const handleRSVP = async (status: RSVPStatus) => {
+  const handleRSVP = async () => {
     if (!user) {
       toast({
         title: 'Login Required',
@@ -36,31 +31,28 @@ export function RSVPButton({ eventId, attendees, onRSVPChange }: RSVPButtonProps
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`/api/events/${eventId}/rsvp`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: user.id,
-          status,
-        }),
-      });
+      let response;
+      
+      if (hasRSVP) {
+        response = await api.cancelRsvp(eventId, user.id);
+      } else {
+        response = await api.rsvpToEvent(eventId, user.id);
+      }
 
-      if (!response.ok) {
-        throw new Error('Failed to update RSVP');
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to update RSVP');
       }
 
       toast({
-        title: 'RSVP Updated',
-        description: `You are ${status.replace('_', ' ')} to this event`,
+        title: hasRSVP ? 'RSVP Cancelled' : 'RSVP Confirmed',
+        description: hasRSVP ? 'You are no longer attending this event' : 'You are now attending this event',
       });
       
       onRSVPChange();
     } catch (error) {
       toast({
         title: 'Error',
-        description: 'Failed to update your RSVP',
+        description: error instanceof Error ? error.message : 'Failed to update your RSVP',
         variant: 'destructive',
       });
     } finally {
@@ -71,25 +63,11 @@ export function RSVPButton({ eventId, attendees, onRSVPChange }: RSVPButtonProps
   return (
     <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
       <Button
-        variant={currentStatus === 'going' ? 'default' : 'outline'}
-        onClick={() => handleRSVP('going')}
+        variant={hasRSVP ? "destructive" : "default"}
+        onClick={handleRSVP}
         disabled={isSubmitting}
       >
-        Going
-      </Button>
-      <Button
-        variant={currentStatus === 'maybe' ? 'default' : 'outline'}
-        onClick={() => handleRSVP('maybe')}
-        disabled={isSubmitting}
-      >
-        Maybe
-      </Button>
-      <Button
-        variant={currentStatus === 'not_going' ? 'default' : 'outline'}
-        onClick={() => handleRSVP('not_going')}
-        disabled={isSubmitting}
-      >
-        Not Going
+        {hasRSVP ? "Cancel RSVP" : "RSVP to Event"}
       </Button>
     </div>
   );

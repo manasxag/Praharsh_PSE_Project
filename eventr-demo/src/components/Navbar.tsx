@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
+import { LogInIcon, LogOutIcon, UserIcon, MenuIcon } from '@/components/ui/icons';
 
 export function Navbar() {
   const { user, logout } = useAuth();

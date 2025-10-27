@@ -1,5 +1,6 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { User } from '@/types';
+import { api } from '@/lib/api';
 
 interface AuthContextType {
   user: User | null;
@@ -35,23 +36,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
     
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await api.login(email, password);
       
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
+      if (!response.success) {
+        throw new Error(response.error || 'Login failed');
       }
       
-      setUser(data.data.user);
+      const userData = response.data as User;
+      setUser(userData);
+      
+      // Store user data in localStorage
+      localStorage.setItem('eventr_auth', JSON.stringify({ user: userData }));
+      
       setIsLoading(false);
-      return data.data.user;
+      return userData;
     } catch (err) {
       setIsLoading(false);
       const message = err instanceof Error ? err.message : 'Login failed';
@@ -64,10 +62,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
     
     try {
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-      });
-      
+      // Remove user data from localStorage
+      localStorage.removeItem('eventr_auth');
       setUser(null);
     } catch (err) {
       console.error('Logout error', err);

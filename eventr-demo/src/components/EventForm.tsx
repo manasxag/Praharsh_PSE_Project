@@ -5,6 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 import { Event } from '@/types';
+import { api } from '@/lib/api';
 
 interface EventFormProps {
   event?: Event;
@@ -45,36 +46,36 @@ export function EventForm({ event, isEditing = false }: EventFormProps) {
     setIsSubmitting(true);
 
     try {
-      const endpoint = isEditing ? `/api/events/${event?.id}` : '/api/events';
-      const method = isEditing ? 'PUT' : 'POST';
+      let response;
       
-      const response = await fetch(endpoint, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      if (isEditing && event) {
+        response = await api.updateEvent(event.id, {
           ...formData,
+          date: new Date(formData.date + 'T' + (formData.time || '00:00')).toISOString(),
           organizerId: user.id,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save event');
+        });
+      } else {
+        response = await api.createEvent({
+          ...formData,
+          date: new Date(formData.date + 'T' + (formData.time || '00:00')).toISOString(),
+          organizerId: user.id,
+        });
       }
 
-      const data = await response.json();
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to save event');
+      }
       
       toast({
         title: isEditing ? 'Event Updated' : 'Event Created',
         description: `${formData.title} has been ${isEditing ? 'updated' : 'created'} successfully`,
       });
       
-      navigate(`/events/${data.data.id}`);
+      navigate(`/events/${response.data.id}`);
     } catch (error) {
       toast({
         title: 'Error',
-        description: `Failed to ${isEditing ? 'update' : 'create'} event`,
+        description: error instanceof Error ? error.message : `Failed to ${isEditing ? 'update' : 'create'} event`,
         variant: 'destructive',
       });
     } finally {
